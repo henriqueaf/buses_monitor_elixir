@@ -1,0 +1,33 @@
+# Before run this docker compose file, check env variables
+# inside .env file.
+##########################################################
+# Run this file on terminal using docker compose V2:
+# => docker compose run --rm app
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ${MIX_ENV}
+      args:
+        - ARG_APP_NAME=${APP_NAME}
+    image: ${APP_NAME}:${MIX_ENV}
+    container_name: ${APP_NAME}
+    ports:
+      - 4000:4000
+    volumes:
+      # Bind-mount project source for live code reloading
+      - .:/app
+      # Named volumes for deps and _build to avoid musl/glibc conflicts
+      # between the Alpine container and the host OS
+      - deps_cache:/app/deps
+      - build_cache:/app/_build
+    env_file: .env.container
+
+volumes:
+  # Persist compiled dependencies across container restarts.
+  # Using named volumes prevents conflicts when the host and container
+  # use different OSes (e.g., host macOS/Linux vs Alpine/musl in container).
+  deps_cache:
+  build_cache:
