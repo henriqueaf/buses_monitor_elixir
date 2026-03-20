@@ -12,12 +12,22 @@ defmodule BusesMonitorElixir.Application do
       BusesMonitorElixir.Repo,
       {Ecto.Migrator,
        repos: Application.fetch_env!(:buses_monitor_elixir, :ecto_repos), skip: skip_migrations?()},
-      {DNSCluster, query: Application.get_env(:buses_monitor_elixir, :dns_cluster_query) || :ignore},
+      {DNSCluster,
+       query: Application.get_env(:buses_monitor_elixir, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: BusesMonitorElixir.PubSub},
+      BusesMonitorElixir.BrtBusesCache,
+      # Start to serve requests, typically the last entry
+      BusesMonitorElixirWeb.Endpoint,
+
+      # Custom Workers
       # Start a worker by calling: BusesMonitorElixir.Worker.start_link(arg)
       # {BusesMonitorElixir.Worker, arg},
-      # Start to serve requests, typically the last entry
-      BusesMonitorElixirWeb.Endpoint
+      %{
+        id: Workers.RequestBrtBusesWorker,
+        start: {BusesMonitorElixir.Workers.RequestBrtBusesWorker, :start, []},
+        restart: :permanent,
+        type: :worker
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
