@@ -11,17 +11,25 @@ defmodule BusesMonitorElixir.Application do
       BusesMonitorElixirWeb.Telemetry,
       BusesMonitorElixir.Repo,
       {Ecto.Migrator,
-       repos: Application.fetch_env!(:buses_monitor_elixir, :ecto_repos), skip: skip_migrations?()},
+        repos: Application.fetch_env!(:buses_monitor_elixir, :ecto_repos),
+        skip: skip_migrations?()},
       {DNSCluster,
-       query: Application.get_env(:buses_monitor_elixir, :dns_cluster_query) || :ignore},
+        query: Application.get_env(:buses_monitor_elixir, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: BusesMonitorElixir.PubSub},
       BusesMonitorElixir.BrtBusesCache,
       # Start to serve requests, typically the last entry
-      BusesMonitorElixirWeb.Endpoint,
+      BusesMonitorElixirWeb.Endpoint
+    ] ++ children_for_env(Mix.env())
 
-      # Custom Workers
-      # Start a worker by calling: BusesMonitorElixir.Worker.start_link(arg)
-      # {BusesMonitorElixir.Worker, arg},
+    # See https://hexdocs.pm/elixir/Supervisor.html
+    # for other strategies and supported options
+    opts = [strategy: :one_for_one, name: BusesMonitorElixir.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+
+  defp children_for_env(:test), do: []
+  defp children_for_env(_env) do
+    [
       %{
         id: Workers.RequestBrtBusesWorker,
         start: {BusesMonitorElixir.Workers.RequestBrtBusesWorker, :start, []},
@@ -29,11 +37,6 @@ defmodule BusesMonitorElixir.Application do
         type: :worker
       }
     ]
-
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: BusesMonitorElixir.Supervisor]
-    Supervisor.start_link(children, opts)
   end
 
   # Tell Phoenix to update the endpoint configuration

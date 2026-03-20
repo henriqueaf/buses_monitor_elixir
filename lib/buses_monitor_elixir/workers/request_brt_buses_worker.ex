@@ -19,8 +19,10 @@ defmodule BusesMonitorElixir.Workers.RequestBrtBusesWorker do
   # ---------------------------------------------------------------------------
 
   def start(opts \\ []) do
+    {name, worker_opts} = Keyword.pop(opts, :name, __MODULE__)
+
     # This will call the init() method with opts as parameter
-    GenServer.start_link(__MODULE__, opts, name: __MODULE__)
+    GenServer.start_link(__MODULE__, worker_opts, name: name)
   end
 
   # ---------------------------------------------------------------------------
@@ -28,14 +30,14 @@ defmodule BusesMonitorElixir.Workers.RequestBrtBusesWorker do
   # ---------------------------------------------------------------------------
 
   @impl GenServer
-  def init(_opts) do
+  def init(opts) do
     send(self(), :fetch)
-    {:ok, %{}}
+    {:ok, %{request_opts: Keyword.get(opts, :request_opts, [])}}
   end
 
   @impl GenServer
-  def handle_info(:fetch, _state) do
-    case BusesMonitorElixir.RequestBrtBuses.call() do
+  def handle_info(:fetch, %{request_opts: request_opts} = state) do
+    case BusesMonitorElixir.RequestBrtBuses.call(request_opts) do
       {:ok, body} ->
         BusesMonitorElixir.BrtBusesCache.put(body)
         Logger.info("[RequestBrtBusesWorker] BRT buses data updated successfully.")
@@ -47,6 +49,6 @@ defmodule BusesMonitorElixir.Workers.RequestBrtBusesWorker do
     end
 
     Process.send_after(self(), :fetch, @interval)
-    {:noreply, %{}}
+    {:noreply, state}
   end
 end

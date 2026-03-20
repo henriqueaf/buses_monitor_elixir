@@ -90,6 +90,9 @@ custom classes must fully style the input
 - Read the docs and options before using tasks (by using `mix help task_name`)
 - To debug test failures, run tests in a specific file with `mix test test/my_test.exs` or run all previously failed tests with `mix test --failed`
 - `mix deps.clean --all` is **almost never needed**. **Avoid** using it unless you have good reason
+- This project is using Docker and docker compose. To run any command you need to execute inside the "docker-compose". For example:
+  - Running tests: "docker-compose run --rm app mix test"
+  - Running precommit: "docker-compose run --rm app mix precommit"
 
 ## Test guidelines
 
