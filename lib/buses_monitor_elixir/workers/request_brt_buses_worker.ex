@@ -40,6 +40,12 @@ defmodule BusesMonitorElixir.Workers.RequestBrtBusesWorker do
         BusesMonitorElixir.BrtBusesCache.put(body)
         Logger.info("[RequestBrtBusesWorker] BRT buses data updated successfully.")
 
+        Phoenix.PubSub.broadcast(
+          BusesMonitorElixir.PubSub,
+          "buses_updated_channel",
+          :refresh_buses
+        )
+
       {:error, reason} ->
         Logger.warning(
           "[RequestBrtBusesWorker] Failed to fetch BRT buses data: #{inspect(reason)}"
