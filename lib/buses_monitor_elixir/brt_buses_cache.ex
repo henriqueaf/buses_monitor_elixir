@@ -40,7 +40,14 @@ defmodule BusesMonitorElixir.BrtBusesCache do
 
   @impl true
   def init(_opts) do
-    :ets.new(@table, [:set, :named_table, :public, read_concurrency: true])
+    :ets.new(@table, [
+      :set,
+      :named_table,
+      :public,
+      read_concurrency: true,
+      write_concurrency: true
+    ])
+
     {:ok, %{}}
   end
 end

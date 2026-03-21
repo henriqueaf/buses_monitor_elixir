@@ -81,3 +81,24 @@ if (process.env.NODE_ENV === "development") {
   })
 }
 
+// Initialize Leaflet bus map when present on the page.
+// Leaflet is loaded via CDN script tag in home.html.heex, making `L` a global.
+const mapEl = document.getElementById("bus-map")
+if (mapEl && window.L) {
+  const map = L.map(mapEl).setView([-22.9, -43.2], 12)
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+    maxZoom: 19
+  }).addTo(map)
+
+  const buses = JSON.parse(mapEl.dataset.buses || "[]")
+  buses.forEach(bus => {
+    if (bus.latitude && bus.longitude) {
+      L.marker([bus.latitude, bus.longitude])
+        .addTo(map)
+        .bindPopup(`<b>Linha ${bus.linha}</b><br>${bus.trajeto}<br>Velocidade: ${bus.velocidade} km/h`)
+    }
+  })
+}
+

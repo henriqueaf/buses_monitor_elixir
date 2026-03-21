@@ -7,19 +7,20 @@ defmodule BusesMonitorElixir.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      BusesMonitorElixirWeb.Telemetry,
-      BusesMonitorElixir.Repo,
-      {Ecto.Migrator,
-        repos: Application.fetch_env!(:buses_monitor_elixir, :ecto_repos),
-        skip: skip_migrations?()},
-      {DNSCluster,
-        query: Application.get_env(:buses_monitor_elixir, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: BusesMonitorElixir.PubSub},
-      BusesMonitorElixir.BrtBusesCache,
-      # Start to serve requests, typically the last entry
-      BusesMonitorElixirWeb.Endpoint
-    ] ++ children_for_env(Mix.env())
+    children =
+      [
+        BusesMonitorElixirWeb.Telemetry,
+        BusesMonitorElixir.Repo,
+        {Ecto.Migrator,
+         repos: Application.fetch_env!(:buses_monitor_elixir, :ecto_repos),
+         skip: skip_migrations?()},
+        {DNSCluster,
+         query: Application.get_env(:buses_monitor_elixir, :dns_cluster_query) || :ignore},
+        {Phoenix.PubSub, name: BusesMonitorElixir.PubSub},
+        BusesMonitorElixir.BrtBusesCache,
+        # Start to serve requests, typically the last entry
+        BusesMonitorElixirWeb.Endpoint
+      ] ++ children_for_env(Mix.env())
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -28,6 +29,7 @@ defmodule BusesMonitorElixir.Application do
   end
 
   defp children_for_env(:test), do: []
+
   defp children_for_env(_env) do
     [
       %{

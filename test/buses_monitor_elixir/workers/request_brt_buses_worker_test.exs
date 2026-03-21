@@ -44,7 +44,9 @@ defmodule BusesMonitorElixir.Workers.RequestBrtBusesWorkerTest do
   end
 
   test "leaves cache empty when the first fetch returns a non-200 status" do
-    worker_pid = start_worker(fn conn -> Plug.Conn.send_resp(conn, 503, "Service Unavailable") end)
+    worker_pid =
+      start_worker(fn conn -> Plug.Conn.send_resp(conn, 503, "Service Unavailable") end)
+
     :sys.get_state(worker_pid)
 
     assert {:error, :empty} = BrtBusesCache.get()
@@ -57,7 +59,7 @@ defmodule BusesMonitorElixir.Workers.RequestBrtBusesWorkerTest do
     # Agent.start_link/1 links to the test process, so it is cleaned up automatically.
     {:ok, mock} = Agent.start_link(fn -> fn conn -> json(conn, initial_payload) end end)
 
-    worker_pid = start_worker(fn conn -> (Agent.get(mock, & &1)).(conn) end)
+    worker_pid = start_worker(fn conn -> Agent.get(mock, & &1).(conn) end)
     :sys.get_state(worker_pid)
 
     assert {:ok, %{data: ^initial_payload}} = BrtBusesCache.get()
@@ -74,7 +76,7 @@ defmodule BusesMonitorElixir.Workers.RequestBrtBusesWorkerTest do
   test "recovers and updates cache after a previous failed fetch" do
     {:ok, mock} = Agent.start_link(fn -> fn conn -> transport_error(conn, :econnrefused) end end)
 
-    worker_pid = start_worker(fn conn -> (Agent.get(mock, & &1)).(conn) end)
+    worker_pid = start_worker(fn conn -> Agent.get(mock, & &1).(conn) end)
     :sys.get_state(worker_pid)
 
     assert {:error, :empty} = BrtBusesCache.get()
