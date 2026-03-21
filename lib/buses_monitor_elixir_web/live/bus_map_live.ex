@@ -43,9 +43,36 @@ defmodule BusesMonitorElixirWeb.BusMapLive do
     </div>
 
     <script :type={Phoenix.LiveView.ColocatedHook} name=".BusMap">
+      const RIO_DE_JANEIRO_COORDINATES = [-22.9228, -43.4643];
+
+      const handleBusesUpdated = (buses, markers, map) => {
+        if (!buses || buses.length === 0) return;
+
+        markers.forEach(m => m.remove());
+
+        const filteredBusArray = filterBusesWithEngineOn(buses);
+        createBusMarkers(filteredBusArray, markers, map);
+      }
+
+      const filterBusesWithEngineOn = (buses) => {
+        return buses.filter(bus => bus.ignicao === 1);
+      }
+
+      const createBusMarkers = (buses, markers, map) => {
+        markers = [];
+
+        buses.forEach(bus => {
+          const marker = L.marker([bus.latitude, bus.longitude])
+            .addTo(map)
+            .bindPopup(`<b>Linha ${bus.linha}</b><br>${bus.trajeto}<br>Velocidade: ${bus.velocidade} km/h`)
+
+          markers.push(marker);
+        });
+      }
+
       export default {
         mounted() {
-          const map = L.map(this.el).setView([-22.9, -43.2], 12)
+          const map = L.map(this.el).setView(RIO_DE_JANEIRO_COORDINATES, 11)
 
           L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution: "© <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
@@ -55,16 +82,7 @@ defmodule BusesMonitorElixirWeb.BusMapLive do
           let markers = []
 
           this.handleEvent("update_buses", ({ buses }) => {
-            markers.forEach(m => m.remove())
-            markers = []
-            buses.forEach(bus => {
-              if (bus.latitude && bus.longitude) {
-                const marker = L.marker([bus.latitude, bus.longitude])
-                  .addTo(map)
-                  .bindPopup(`<b>Linha ${bus.linha}</b><br>${bus.trajeto}<br>Velocidade: ${bus.velocidade} km/h`)
-                markers.push(marker)
-              }
-            })
+            handleBusesUpdated(buses, markers, map)
           })
         }
       }
