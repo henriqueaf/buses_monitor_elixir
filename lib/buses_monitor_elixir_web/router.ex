@@ -17,7 +17,7 @@ defmodule BusesMonitorElixirWeb.Router do
   scope "/", BusesMonitorElixirWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", BusMapLive
   end
 
   # Other scopes may use custom stacks.

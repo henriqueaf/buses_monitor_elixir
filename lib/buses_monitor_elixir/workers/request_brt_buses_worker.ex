@@ -12,8 +12,6 @@ defmodule BusesMonitorElixir.Workers.RequestBrtBusesWorker do
 
   require Logger
 
-  @interval :timer.minutes(1)
-
   # ---------------------------------------------------------------------------
   # CLIENT SIDE
   # ---------------------------------------------------------------------------
@@ -48,7 +46,7 @@ defmodule BusesMonitorElixir.Workers.RequestBrtBusesWorker do
         )
     end
 
-    Process.send_after(self(), :fetch, @interval)
+    Process.send_after(self(), :fetch, BusesMonitorElixir.refresh_interval())
     {:noreply, state}
   end
 end

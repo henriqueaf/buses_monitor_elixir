@@ -112,3 +112,7 @@ if config_env() == :prod do
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 end
+
+# Put here all ENV vars that need to be available at runtime.
+config :buses_monitor_elixir,
+  request_brt_buses_interval_seconds: System.fetch_env!("REQUEST_BRT_BUSES_INTERVAL_SECONDS")
