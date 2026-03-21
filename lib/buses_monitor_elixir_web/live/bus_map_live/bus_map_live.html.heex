@@ -1,0 +1,46 @@
+<Layouts.flash_group flash={@flash} />
+
+<div
+  id="bus-map"
+  style="position: fixed; inset: 0; z-index: 0;"
+  phx-hook=".BusMap"
+  phx-update="ignore"
+>
+</div>
+
+<script :type={Phoenix.LiveView.ColocatedHook} name=".BusMap">
+  const RIO_DE_JANEIRO_COORDINATES = [-22.9228, -43.4643];
+
+  const filterBusesWithEngineOn = (buses) => {
+    return buses.filter(bus => bus.ignicao === 1);
+  }
+
+  export default {
+    mounted() {
+      const map = L.map(this.el).setView(RIO_DE_JANEIRO_COORDINATES, 11)
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+        maxZoom: 19
+      }).addTo(map)
+
+      let markers = []
+
+      this.handleEvent("update_buses", ({ buses }) => {
+        if (!buses || buses.length === 0) return;
+
+        markers.forEach(m => m.remove());
+        markers = [];
+
+        const filteredBusArray = filterBusesWithEngineOn(buses);
+        filteredBusArray.forEach(bus => {
+          const marker = L.marker([bus.latitude, bus.longitude])
+            .addTo(map)
+            .bindPopup(`<b>Linha ${bus.linha}</b><br>${bus.trajeto}<br>Velocidade: ${bus.velocidade} km/h`)
+
+          markers.push(marker);
+        });
+      })
+    }
+  }
+</script>
