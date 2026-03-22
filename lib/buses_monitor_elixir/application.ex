@@ -5,6 +5,8 @@ defmodule BusesMonitorElixir.Application do
 
   use Application
 
+  @env Mix.env()
+
   @impl true
   def start(_type, _args) do
     children =
@@ -20,7 +22,7 @@ defmodule BusesMonitorElixir.Application do
         BusesMonitorElixir.BrtBusesCache,
         # Start to serve requests, typically the last entry
         BusesMonitorElixirWeb.Endpoint
-      ] ++ children_for_env(Mix.env())
+      ] ++ children_for_env(@env)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
