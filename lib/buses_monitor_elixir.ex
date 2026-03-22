@@ -8,7 +8,7 @@ defmodule BusesMonitorElixir do
   """
 
   @doc """
-  Returns the BRT buses refresh interval in seconds, as configured by
+  Returns the BRT buses refresh interval in milliseconds, as configured by
   `:request_brt_buses_interval_seconds`.
   """
   def refresh_interval do

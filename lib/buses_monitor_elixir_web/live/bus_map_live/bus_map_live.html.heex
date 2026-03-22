@@ -1,5 +1,23 @@
 <Layouts.flash_group flash={@flash} />
 
+<div class="fixed top-4 right-4 z-10 pointer-events-none">
+  <div class="flex items-center gap-2 bg-sky-100/90 backdrop-blur-sm text-slate-700 text-sm font-medium px-5 py-3 rounded-full shadow-md border border-sky-200/60">
+    <.icon name="hero-information-circle" class="w-5 h-5 text-sky-500 shrink-0" />
+    <span>Mapa atualizado a cada {@refresh_interval_seconds} segundos</span>
+  </div>
+</div>
+
+<div class="fixed bottom-4 left-4 z-10">
+  <button
+    id="fit-bounds-btn"
+    phx-hook=".FitBounds"
+    class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 active:scale-95 text-white text-sm font-semibold px-5 py-3 rounded-2xl shadow-lg transition-all duration-150 cursor-pointer"
+  >
+    <.icon name="hero-arrows-pointing-out" class="w-5 h-5 shrink-0" />
+    <span>Ajustar Zoom</span>
+  </button>
+</div>
+
 <div
   id="bus-map"
   style="position: fixed; inset: 0; z-index: 0;"
@@ -7,6 +25,16 @@
   phx-update="ignore"
 >
 </div>
+
+<script :type={Phoenix.LiveView.ColocatedHook} name=".FitBounds">
+  export default {
+    mounted() {
+      this.el.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent("fit-map-bounds"))
+      })
+    }
+  }
+</script>
 
 <script :type={Phoenix.LiveView.ColocatedHook} name=".BusMap">
   const RIO_DE_JANEIRO_COORDINATES = [-22.9228, -43.4643];
@@ -25,6 +53,12 @@
       }).addTo(map)
 
       let markers = []
+
+      window.addEventListener("fit-map-bounds", () => {
+        if (markers.length === 0) return;
+        const group = L.featureGroup(markers);
+        map.fitBounds(group.getBounds(), { padding: [40, 40] });
+      })
 
       this.handleEvent("buses_updated", ({ buses }) => {
         if (!buses || buses.length === 0) return;

@@ -3,15 +3,13 @@ defmodule BusesMonitorElixirWeb.BusMapLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    socket =
-      if connected?(socket) do
-        dispatch_event_to_js(socket)
-      else
-        socket
-      end
+    refresh_interval_seconds =
+      System.convert_time_unit(BusesMonitorElixir.refresh_interval(), :millisecond, :second)
+
+    socket = if connected?(socket), do: dispatch_event_to_js(socket), else: socket
 
     Phoenix.PubSub.subscribe(BusesMonitorElixir.PubSub, "buses_updated_channel")
-    {:ok, socket}
+    {:ok, assign(socket, :refresh_interval_seconds, refresh_interval_seconds)}
   end
 
   @impl true
