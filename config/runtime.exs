@@ -33,7 +33,10 @@ if config_env() == :prod do
 
   config :buses_monitor_elixir, BusesMonitorElixir.Repo,
     database: database_path,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5")
+    pool_size: 1,
+    journal_mode: :wal,
+    foreign_keys: :on,
+    busy_timeout: 5000
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
