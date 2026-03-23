@@ -14,7 +14,8 @@ defmodule BusesMonitorElixirWeb.BusMapLive do
 
   @impl true
   def handle_info(:refresh_buses, socket) do
-    {:noreply, dispatch_event_to_js(socket)}
+    socket = dispatch_event_to_js(socket)
+    {:noreply, socket}
   end
 
   defp dispatch_event_to_js(socket) do
