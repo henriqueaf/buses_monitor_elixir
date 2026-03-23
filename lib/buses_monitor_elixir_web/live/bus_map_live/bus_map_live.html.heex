@@ -52,27 +52,43 @@
         maxZoom: 19
       }).addTo(map)
 
-      let markers = []
+      const markers = new Map()
 
       window.addEventListener("fit-map-bounds", () => {
-        if (markers.length === 0) return;
-        const group = L.featureGroup(markers);
+        if (markers.size === 0) return;
+        const group = L.featureGroup([...markers.values()]);
         map.fitBounds(group.getBounds(), { padding: [40, 40] });
       })
 
       this.handleEvent("buses_updated", ({ buses }) => {
         if (!buses || buses.length === 0) return;
 
-        markers.forEach(m => m.remove());
-        markers = [];
-
         const filteredBusArray = filterBusesWithEngineOn(buses);
-        filteredBusArray.forEach(bus => {
-          const marker = L.marker([bus.latitude, bus.longitude])
-            .addTo(map)
-            .bindPopup(`<b>Linha ${bus.linha}</b><br>${bus.trajeto}<br>Velocidade: ${bus.velocidade} km/h`)
+        const incomingIds = new Set(filteredBusArray.map(bus => bus.codigo));
 
-          markers.push(marker);
+        // Remove markers for buses that are no longer in the incoming data.
+        for (const [codigo, marker] of markers.entries()) {
+          if (!incomingIds.has(codigo)) {
+            marker.remove();
+            markers.delete(codigo);
+          }
+        }
+
+        filteredBusArray.forEach(bus => {
+          const popupContent = `<b>Linha ${bus.linha}</b><br>${bus.trajeto}<br>Velocidade: ${bus.velocidade} km/h`;
+
+          if (markers.has(bus.codigo)) {
+            // Update existing marker position and popup content.
+            const marker = markers.get(bus.codigo);
+            marker.setLatLng([bus.latitude, bus.longitude]);
+            marker.getPopup().setContent(popupContent);
+          } else {
+            // Create a new marker for the new bus.
+            const marker = L.marker([bus.latitude, bus.longitude])
+              .addTo(map)
+              .bindPopup(popupContent);
+            markers.set(bus.codigo, marker);
+          }
         });
       })
     }
