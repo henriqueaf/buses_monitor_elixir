@@ -59,10 +59,20 @@
 </script>
 
 <script :type={Phoenix.LiveView.ColocatedHook} name=".BusMap">
+  import { distanceInKm } from "@/js/utils/geo";
+
   const RIO_DE_JANEIRO_COORDINATES = [-22.9228, -43.4643];
 
   const filterBusesWithEngineOn = (buses) => {
     return buses.filter(bus => bus.ignicao === 1);
+  }
+
+  const MAX_DISTANCE_FROM_CENTER_KM = 100;
+
+  const filterBusesWithinRadius = (buses) => {
+    return buses.filter(
+      bus => distanceInKm(RIO_DE_JANEIRO_COORDINATES, [bus.latitude, bus.longitude]) <= MAX_DISTANCE_FROM_CENTER_KM
+    );
   }
 
   export default {
@@ -87,7 +97,8 @@
       this.handleEvent("buses_updated", ({ buses }) => {
         if (!buses || buses.length === 0) return;
 
-        const filteredBusArray = filterBusesWithEngineOn(buses);
+        let filteredBusArray = filterBusesWithEngineOn(buses);
+        filteredBusArray = filterBusesWithinRadius(filteredBusArray);
         const incomingIds = new Set(filteredBusArray.map(bus => bus.codigo));
 
         // Remove markers for buses that are no longer in the incoming data.
