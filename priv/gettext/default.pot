@@ -16,25 +16,25 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:37
-#, elixir-autogen, elixir-format
-msgid "Ajustar Zoom"
-msgstr ""
-
 #: lib/buses_monitor_elixir_web/components/layouts.ex:99
 #: lib/buses_monitor_elixir_web/components/layouts.ex:111
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
 msgstr ""
 
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:37
+#, elixir-autogen, elixir-format
+msgid "Fit zoom"
+msgstr ""
+
 #: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:46
 #, elixir-autogen, elixir-format
-msgid "Linha"
+msgid "Line"
 msgstr ""
 
 #: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:6
 #, elixir-autogen, elixir-format
-msgid "Mapa atualizado a cada %{seconds} segundos"
+msgid "Map updated every %{seconds} seconds"
 msgstr ""
 
 #: lib/buses_monitor_elixir_web/components/layouts.ex:106
@@ -44,7 +44,7 @@ msgstr ""
 
 #: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:47
 #, elixir-autogen, elixir-format
-msgid "Velocidade"
+msgid "Speed"
 msgstr ""
 
 #: lib/buses_monitor_elixir_web/components/layouts.ex:94
