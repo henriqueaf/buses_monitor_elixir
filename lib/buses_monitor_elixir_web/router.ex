@@ -4,6 +4,8 @@ defmodule BusesMonitorElixirWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
+    plug :fetch_cookies
+    plug BusesMonitorElixirWeb.Plugs.SetLocale
     plug :fetch_live_flash
     plug :put_root_layout, html: {BusesMonitorElixirWeb.Layouts, :root}
     plug :protect_from_forgery
@@ -17,7 +19,11 @@ defmodule BusesMonitorElixirWeb.Router do
   scope "/", BusesMonitorElixirWeb do
     pipe_through :browser
 
-    live "/", BusMapLive
+    get "/locale/:locale", LocaleController, :update
+
+    live_session :default, on_mount: [BusesMonitorElixirWeb.LocaleHook] do
+      live "/", BusMapLive
+    end
   end
 
   # Other scopes may use custom stacks.

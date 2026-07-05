@@ -34,7 +34,7 @@ FROM build AS dev
 # Source code and config are bind-mounted by docker-compose at runtime.
 # deps and _build are named volumes managed by docker-compose, so
 # dep compilation happens at container startup to leverage the cache.
-CMD ["sh", "-c", "mix deps.get && mix phx.server"]
+CMD ["sh", "-c", "mix deps.get && mix gettext.extract --merge && mix phx.server"]
 
 # ============================================================
 # Stage 3 – prod_builder (compile release artefacts)
