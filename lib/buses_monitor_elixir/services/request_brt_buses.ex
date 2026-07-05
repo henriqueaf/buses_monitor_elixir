@@ -1,4 +1,8 @@
 defmodule BusesMonitorElixir.RequestBrtBuses do
+  @moduledoc """
+  Fetches live BRT bus GPS data from Rio de Janeiro's open data API.
+  """
+
   @brt_url "https://dados.mobilidade.rio/gps/brt"
 
   def call(req_opts \\ []) do

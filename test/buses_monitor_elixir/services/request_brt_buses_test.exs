@@ -2,7 +2,7 @@ defmodule BusesMonitorElixir.RequestBrtBusesTest do
   use ExUnit.Case, async: true
   import Req.Test, only: [stub: 2, json: 2, transport_error: 2]
 
-  alias BusesMonitorElixir.{RequestBrtBuses}
+  alias BusesMonitorElixir.RequestBrtBuses
 
   defp req_opts, do: [plug: {Req.Test, RequestBrtBuses}, retry: false]
 
