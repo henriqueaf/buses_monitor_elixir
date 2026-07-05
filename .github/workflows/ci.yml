@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build app image (the build target is set to the MIX_ENV variable in the docker-compose.yml file)
+        run: |
+          cp .env.container.example .env.container
+          docker compose build
+
+      - name: Install dependencies
+        run: docker compose run app mix deps.get
+
+      - name: Compile (fail on compile errors)
+        run: docker compose run -e MIX_ENV=test app mix compile
+
+      - name: Check formatting
+        run: docker compose run -e MIX_ENV=test app mix format --check-formatted
+
+      - name: Lint
+        run: docker compose run -e MIX_ENV=test app mix credo --strict
+
+      - name: Set up database
+        run: |
+          docker compose run -e MIX_ENV=test app mix ecto.create --quiet
+          docker compose run -e MIX_ENV=test app mix ecto.migrate --quiet
+
+      - name: Run tests with coverage
+        run: docker compose run -e MIX_ENV=test app mix coveralls
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

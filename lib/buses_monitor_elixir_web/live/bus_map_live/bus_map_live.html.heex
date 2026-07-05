@@ -3,14 +3,19 @@
 <div class="fixed top-4 right-4 z-10 flex flex-col items-end gap-2 pointer-events-none">
   <div class="flex items-center gap-2 bg-sky-100/90 backdrop-blur-sm text-slate-700 text-sm font-medium px-5 py-3 rounded-full shadow-md border border-sky-200/60">
     <.icon name="hero-information-circle" class="w-5 h-5 text-sky-500 shrink-0" />
-    <span>{gettext("Map updated every %{seconds} seconds", seconds: @refresh_interval_seconds)}</span>
+    <span>
+      {gettext("Map updated every %{seconds} seconds", seconds: @refresh_interval_seconds)}
+    </span>
   </div>
   <div class="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full shadow-md border border-sky-200/60 px-2 py-1 pointer-events-auto text-xs font-semibold">
     <.link
       href="/locale/pt_BR"
       class={[
         "px-2 py-1 rounded-full",
-        if(@locale == "pt_BR", do: "bg-blue-500 text-white", else: "text-slate-500 hover:text-slate-700")
+        if(@locale == "pt_BR",
+          do: "bg-blue-500 text-white",
+          else: "text-slate-500 hover:text-slate-700"
+        )
       ]}
     >
       PT
@@ -19,7 +24,10 @@
       href="/locale/en"
       class={[
         "px-2 py-1 rounded-full",
-        if(@locale == "en", do: "bg-blue-500 text-white", else: "text-slate-500 hover:text-slate-700")
+        if(@locale == "en",
+          do: "bg-blue-500 text-white",
+          else: "text-slate-500 hover:text-slate-700"
+        )
       ]}
     >
       EN

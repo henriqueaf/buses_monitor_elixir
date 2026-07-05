@@ -22,17 +22,17 @@ msgstr "Ações"
 msgid "Attempting to reconnect"
 msgstr "Tentando reconectar"
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:37
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:45
 #, elixir-autogen, elixir-format
 msgid "Fit zoom"
 msgstr "Ajustar Zoom"
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:46
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:54
 #, elixir-autogen, elixir-format
 msgid "Line"
 msgstr "Linha"
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:6
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:7
 #, elixir-autogen, elixir-format
 msgid "Map updated every %{seconds} seconds"
 msgstr "Mapa atualizado a cada %{seconds} segundos"
@@ -42,7 +42,7 @@ msgstr "Mapa atualizado a cada %{seconds} segundos"
 msgid "Something went wrong!"
 msgstr "Algo deu errado!"
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:47
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:55
 #, elixir-autogen, elixir-format
 msgid "Speed"
 msgstr "Velocidade"
