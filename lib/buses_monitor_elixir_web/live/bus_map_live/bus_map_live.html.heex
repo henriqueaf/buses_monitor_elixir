@@ -35,6 +35,43 @@
   </div>
 </div>
 
+<div
+  id="line-filter"
+  phx-hook=".LineFilter"
+  phx-update="ignore"
+  class="fixed top-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-md px-4"
+  data-placeholder={gettext("Filter by line...")}
+  data-clear-all={gettext("Clear all")}
+  data-no-lines={gettext("No lines available")}
+  data-no-matches={gettext("No matching lines")}
+>
+  <div class="relative">
+    <div
+      id="line-filter-control"
+      class="flex flex-wrap items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-sky-200/60 px-3 py-2 cursor-text"
+    >
+      <div id="line-filter-chips" class="flex flex-wrap items-center gap-1.5"></div>
+      <input
+        id="line-filter-input"
+        type="text"
+        autocomplete="off"
+        class="flex-1 min-w-[80px] bg-transparent outline-none text-sm text-slate-700 placeholder:text-slate-400 py-1"
+      />
+    </div>
+    <div
+      id="line-filter-dropdown"
+      class="hidden absolute left-0 right-0 mt-2 max-h-64 overflow-y-auto bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-sky-200/60 py-2"
+    >
+      <div
+        id="line-filter-clear-all"
+        class="hidden px-4 py-1.5 text-xs font-semibold text-blue-500 hover:text-blue-600 cursor-pointer select-none"
+      >
+      </div>
+      <ul id="line-filter-options" class="text-sm text-slate-700"></ul>
+    </div>
+  </div>
+</div>
+
 <div class="fixed bottom-4 left-4 z-10">
   <button
     id="fit-bounds-btn"
@@ -66,22 +103,177 @@
   }
 </script>
 
+<script :type={Phoenix.LiveView.ColocatedHook} name=".LineFilter">
+  import { filterVisibleBuses } from "@/js/utils/bus_filters";
+
+  const sortLines = (lines) => {
+    return [...lines].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  }
+
+  export default {
+    mounted() {
+      const placeholder = this.el.dataset.placeholder
+      const clearAllLabel = this.el.dataset.clearAll
+      const noLinesLabel = this.el.dataset.noLines
+      const noMatchesLabel = this.el.dataset.noMatches
+
+      const input = this.el.querySelector("#line-filter-input")
+      const control = this.el.querySelector("#line-filter-control")
+      const dropdown = this.el.querySelector("#line-filter-dropdown")
+      const chipsContainer = this.el.querySelector("#line-filter-chips")
+      const optionsList = this.el.querySelector("#line-filter-options")
+      const clearAllButton = this.el.querySelector("#line-filter-clear-all")
+
+      input.placeholder = placeholder
+      clearAllButton.textContent = clearAllLabel
+
+      let availableLines = []
+      const selectedLines = new Set()
+      let searchTerm = ""
+      let isOpen = false
+
+      const dispatchSelectionChanged = () => {
+        window.dispatchEvent(
+          new CustomEvent("bus-lines-filter-changed", { detail: { lines: [...selectedLines] } })
+        )
+      }
+
+      const renderChips = () => {
+        chipsContainer.innerHTML = ""
+        selectedLines.forEach(line => {
+          const chip = document.createElement("span")
+          chip.className = "flex items-center gap-1 bg-blue-500 text-white text-xs font-semibold pl-2 pr-1 py-1 rounded-full"
+
+          const label = document.createElement("span")
+          label.textContent = line
+          chip.appendChild(label)
+
+          const removeButton = document.createElement("button")
+          removeButton.type = "button"
+          removeButton.className = "leading-none px-1 hover:text-blue-100"
+          removeButton.textContent = "×"
+          removeButton.addEventListener("click", (event) => {
+            event.stopPropagation()
+            selectedLines.delete(line)
+            renderChips()
+            renderOptions()
+            dispatchSelectionChanged()
+          })
+          chip.appendChild(removeButton)
+
+          chipsContainer.appendChild(chip)
+        })
+      }
+
+      const renderOptions = () => {
+        optionsList.innerHTML = ""
+        clearAllButton.classList.toggle("hidden", selectedLines.size === 0)
+
+        const visibleLines = availableLines.filter(
+          line => line.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+
+        if (visibleLines.length === 0) {
+          const emptyItem = document.createElement("li")
+          emptyItem.className = "px-4 py-1.5 text-slate-400"
+          emptyItem.textContent = availableLines.length === 0 ? noLinesLabel : noMatchesLabel
+          optionsList.appendChild(emptyItem)
+          return
+        }
+
+        visibleLines.forEach(line => {
+          const item = document.createElement("li")
+          item.className = "flex items-center gap-2 px-4 py-1.5 hover:bg-sky-50 cursor-pointer select-none"
+          item.dataset.line = line
+
+          const checkbox = document.createElement("input")
+          checkbox.type = "checkbox"
+          checkbox.className = "pointer-events-none accent-blue-500"
+          checkbox.checked = selectedLines.has(line)
+          item.appendChild(checkbox)
+
+          const label = document.createElement("span")
+          label.textContent = line
+          item.appendChild(label)
+
+          item.addEventListener("click", () => toggleLine(line))
+          optionsList.appendChild(item)
+        })
+      }
+
+      const toggleLine = (line) => {
+        if (selectedLines.has(line)) {
+          selectedLines.delete(line)
+        } else {
+          selectedLines.add(line)
+        }
+        renderChips()
+        renderOptions()
+        dispatchSelectionChanged()
+      }
+
+      const openDropdown = () => {
+        isOpen = true
+        dropdown.classList.remove("hidden")
+      }
+
+      const closeDropdown = () => {
+        isOpen = false
+        dropdown.classList.add("hidden")
+        searchTerm = ""
+        input.value = ""
+        renderOptions()
+      }
+
+      control.addEventListener("click", () => {
+        input.focus()
+        openDropdown()
+      })
+
+      input.addEventListener("focus", openDropdown)
+
+      input.addEventListener("input", () => {
+        searchTerm = input.value
+        renderOptions()
+      })
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          input.blur()
+          closeDropdown()
+        }
+      })
+
+      clearAllButton.addEventListener("click", (event) => {
+        event.stopPropagation()
+        selectedLines.clear()
+        renderChips()
+        renderOptions()
+        dispatchSelectionChanged()
+      })
+
+      this.handleDocumentClick = (event) => {
+        if (isOpen && !this.el.contains(event.target)) closeDropdown()
+      }
+      document.addEventListener("click", this.handleDocumentClick)
+
+      this.handleEvent("buses_updated", ({ buses }) => {
+        const visibleBuses = filterVisibleBuses(buses || [])
+        availableLines = sortLines([...new Set(visibleBuses.map(bus => bus.linha))])
+        renderOptions()
+      })
+
+      renderOptions()
+    },
+
+    destroyed() {
+      document.removeEventListener("click", this.handleDocumentClick)
+    }
+  }
+</script>
+
 <script :type={Phoenix.LiveView.ColocatedHook} name=".BusMap">
-  import { distanceInKm } from "@/js/utils/geo";
-
-  const RIO_DE_JANEIRO_COORDINATES = [-22.9228, -43.4643];
-
-  const filterBusesWithEngineOn = (buses) => {
-    return buses.filter(bus => bus.ignicao === 1);
-  }
-
-  const MAX_DISTANCE_FROM_CENTER_KM = 100;
-
-  const filterBusesWithinRadius = (buses) => {
-    return buses.filter(
-      bus => distanceInKm(RIO_DE_JANEIRO_COORDINATES, [bus.latitude, bus.longitude]) <= MAX_DISTANCE_FROM_CENTER_KM
-    );
-  }
+  import { RIO_DE_JANEIRO_COORDINATES, filterVisibleBuses } from "@/js/utils/bus_filters";
 
   export default {
     mounted() {
@@ -95,6 +287,8 @@
       }).addTo(map)
 
       const markers = new Map()
+      let lastBuses = null
+      let selectedLines = []
 
       window.addEventListener("fit-map-bounds", () => {
         if (markers.size === 0) return;
@@ -102,11 +296,16 @@
         map.fitBounds(group.getBounds(), { padding: [40, 40] });
       })
 
-      this.handleEvent("buses_updated", ({ buses }) => {
+      const filterBusesBySelectedLines = (buses) => {
+        if (selectedLines.length === 0) return buses;
+        const selectedSet = new Set(selectedLines);
+        return buses.filter(bus => selectedSet.has(bus.linha));
+      }
+
+      const renderBuses = (buses) => {
         if (!buses || buses.length === 0) return;
 
-        let filteredBusArray = filterBusesWithEngineOn(buses);
-        filteredBusArray = filterBusesWithinRadius(filteredBusArray);
+        const filteredBusArray = filterBusesBySelectedLines(filterVisibleBuses(buses));
         const incomingIds = new Set(filteredBusArray.map(bus => bus.codigo));
 
         // Remove markers for buses that are no longer in the incoming data.
@@ -133,7 +332,22 @@
             markers.set(bus.codigo, marker);
           }
         });
+      }
+
+      this.handleEvent("buses_updated", ({ buses }) => {
+        lastBuses = buses
+        renderBuses(buses)
       })
+
+      this.handleLinesFilterChanged = (e) => {
+        selectedLines = e.detail.lines
+        if (lastBuses) renderBuses(lastBuses)
+      }
+      window.addEventListener("bus-lines-filter-changed", this.handleLinesFilterChanged)
+    },
+
+    destroyed() {
+      window.removeEventListener("bus-lines-filter-changed", this.handleLinesFilterChanged)
     }
   }
 </script>

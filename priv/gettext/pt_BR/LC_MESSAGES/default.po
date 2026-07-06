@@ -22,12 +22,12 @@ msgstr "Ações"
 msgid "Attempting to reconnect"
 msgstr "Tentando reconectar"
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:45
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:82
 #, elixir-autogen, elixir-format
 msgid "Fit zoom"
 msgstr "Ajustar Zoom"
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:54
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:91
 #, elixir-autogen, elixir-format
 msgid "Line"
 msgstr "Linha"
@@ -42,7 +42,7 @@ msgstr "Mapa atualizado a cada %{seconds} segundos"
 msgid "Something went wrong!"
 msgstr "Algo deu errado!"
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:55
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:92
 #, elixir-autogen, elixir-format
 msgid "Speed"
 msgstr "Velocidade"
@@ -56,3 +56,23 @@ msgstr "Sem conexão com internet"
 #, elixir-autogen, elixir-format
 msgid "close"
 msgstr "fechar"
+
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:44
+#, elixir-autogen, elixir-format
+msgid "Clear all"
+msgstr "Limpar tudo"
+
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:43
+#, elixir-autogen, elixir-format
+msgid "Filter by line..."
+msgstr "Filtrar por linha..."
+
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:45
+#, elixir-autogen, elixir-format
+msgid "No lines available"
+msgstr "Nenhuma linha disponível"
+
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:46
+#, elixir-autogen, elixir-format
+msgid "No matching lines"
+msgstr "Nenhuma linha encontrada"
