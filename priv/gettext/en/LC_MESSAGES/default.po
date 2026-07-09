@@ -22,12 +22,12 @@ msgstr ""
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:82
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:56
 #, elixir-autogen, elixir-format
 msgid "Fit zoom"
 msgstr ""
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:91
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:83
 #, elixir-autogen, elixir-format
 msgid "Line"
 msgstr ""
@@ -42,7 +42,7 @@ msgstr ""
 msgid "Something went wrong!"
 msgstr ""
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:92
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:84
 #, elixir-autogen, elixir-format
 msgid "Speed"
 msgstr ""
@@ -57,22 +57,22 @@ msgstr ""
 msgid "close"
 msgstr ""
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:44
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:18
 #, elixir-autogen, elixir-format
 msgid "Clear all"
 msgstr ""
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:43
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:17
 #, elixir-autogen, elixir-format
 msgid "Filter by line..."
 msgstr ""
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:45
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:19
 #, elixir-autogen, elixir-format
 msgid "No lines available"
 msgstr ""
 
-#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:46
+#: lib/buses_monitor_elixir_web/live/bus_map_live/bus_map_live.html.heex:20
 #, elixir-autogen, elixir-format
 msgid "No matching lines"
 msgstr ""
