@@ -43,7 +43,7 @@ defmodule BusesMonitorElixir.Workers.RequestBrtBusesWorker do
         Phoenix.PubSub.broadcast(
           BusesMonitorElixir.PubSub,
           "buses_updated_channel",
-          :refresh_buses
+          {:refresh_buses, %{buses: body["veiculos"]}}
         )
 
       {:error, reason} ->
