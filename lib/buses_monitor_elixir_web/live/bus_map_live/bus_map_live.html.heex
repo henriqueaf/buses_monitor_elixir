@@ -60,28 +60,17 @@
 <div class="fixed bottom-4 right-4 z-10">
   <div class="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full shadow-md border border-sky-200/60 px-2 py-1 pointer-events-auto text-xs font-semibold">
     <.link
-      href="/locale/pt_BR"
+      :for={locale <- BusesMonitorElixirWeb.Locale.valid_locales()}
+      href={"/locale/#{locale}"}
       class={[
         "px-2 py-1 rounded-full",
-        if(@locale == "pt_BR",
+        if(@locale == locale,
           do: "bg-blue-500 text-white",
           else: "text-slate-500 hover:text-slate-700"
         )
       ]}
     >
-      PT
-    </.link>
-    <.link
-      href="/locale/en"
-      class={[
-        "px-2 py-1 rounded-full",
-        if(@locale == "en",
-          do: "bg-blue-500 text-white",
-          else: "text-slate-500 hover:text-slate-700"
-        )
-      ]}
-    >
-      EN
+      {locale |> String.slice(0, 2) |> String.upcase()}
     </.link>
   </div>
 </div>
